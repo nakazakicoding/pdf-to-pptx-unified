@@ -444,14 +444,21 @@ async def generate_pptx_only(job_id: str):
         process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            cwd=str(BASE_DIR)
+            stderr=subprocess.STDOUT,  # Merge stderr into stdout
+            cwd=str(BASE_DIR),
+            text=True,
+            bufsize=1  # Line buffered
         )
         
-        # Wait for completion with progress updates
-        while process.poll() is None:
-            job["progress"] = min(98, job["progress"] + 1)
-            await asyncio.sleep(2)
+        # Stream output to console in real-time
+        while True:
+            line = process.stdout.readline()
+            if not line and process.poll() is not None:
+                break
+            if line:
+                print(f"[CONVERTER] {line.rstrip()}")
+            job["progress"] = min(98, job["progress"] + 0.5)
+            await asyncio.sleep(0.1)
         
         returncode = process.returncode
         if returncode != 0:
