@@ -3,3 +3,11 @@ tesseract-ocr-jpn
 tesseract-ocr-eng
 libgl1
 fonts-noto-cjk
+fonts-noto-cjk-extra
+fonts-takao-gothic
+fonts-takao-mincho
+fonts-ipafont-gothic
+fonts-ipafont-mincho
+fonts-ipaexfont-gothic
+fonts-ipaexfont-mincho
+fonts-vlgothic

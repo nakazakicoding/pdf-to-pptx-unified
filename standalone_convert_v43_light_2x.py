@@ -254,21 +254,23 @@ def extract_text_with_ocr_word_level(page_image_path, page_width, page_height):
         pytesseract.pytesseract.tesseract_cmd = tesseract_path
     
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    # TesseractインストールフォルダからTESSDATA_PREFIXを設定（日本語パス回避）
-    tesseract_tessdata = r"C:\Program Files\Tesseract-OCR\tessdata"
-    if os.path.exists(tesseract_tessdata):
-        os.environ['TESSDATA_PREFIX'] = tesseract_tessdata
-        local_tessdata = tesseract_tessdata
-    else:
-        # Linux環境: システムのtessdataを使用（Aptfileでインストール済み）
-        linux_tessdata = "/usr/share/tesseract-ocr/4.00/tessdata"
-        local_tessdata = os.path.join(base_dir, 'tessdata')
-        if os.path.exists(linux_tessdata):
-            os.environ['TESSDATA_PREFIX'] = linux_tessdata
-            local_tessdata = linux_tessdata
-        elif os.path.exists(local_tessdata):
-            os.environ['TESSDATA_PREFIX'] = local_tessdata
-        # どちらも存在しない場合はTESSDATA_PREFIXを設定しない（pytesseractのデフォルトを使用）
+    # tessdataパス優先順位: ローカル > Windows システム > Linux システム
+    local_tessdata = os.path.join(base_dir, 'tessdata')
+    windows_tessdata = r"C:\Program Files\Tesseract-OCR\tessdata"
+    linux_tessdata = "/usr/share/tesseract-ocr/4.00/tessdata"
+    
+    if os.path.exists(local_tessdata):
+        # ローカルtessdata優先（日本語データあり）
+        os.environ['TESSDATA_PREFIX'] = local_tessdata
+    elif os.path.exists(windows_tessdata):
+        # Windowsシステムtessdata
+        os.environ['TESSDATA_PREFIX'] = windows_tessdata
+        local_tessdata = windows_tessdata
+    elif os.path.exists(linux_tessdata):
+        # Linux環境: Aptfileでインストール済み
+        os.environ['TESSDATA_PREFIX'] = linux_tessdata
+        local_tessdata = linux_tessdata
+    # どれも存在しない場合はTESSDATA_PREFIXを設定しない（pytesseractのデフォルトを使用）
     print(f"  [DEBUG] Extracting text with OCR (word level)...")
     
     global OCR_SEGMENTS  # v35: グローバル変数を関数先頭で宣言
@@ -383,7 +385,7 @@ def extract_text_with_ocr_word_level(page_image_path, page_width, page_height):
                 split_lines.append(current_segment)
             
             # 分割された各セグメントを個別のブロックとして処理
-            for segment_idx, segment_words in split_lines:
+            for segment_idx, segment_words in enumerate(split_lines):
                 # 詳細情報を保存
                 word_details = []
                 combined_text = ""
