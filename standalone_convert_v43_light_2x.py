@@ -260,8 +260,15 @@ def extract_text_with_ocr_word_level(page_image_path, page_width, page_height):
         os.environ['TESSDATA_PREFIX'] = tesseract_tessdata
         local_tessdata = tesseract_tessdata
     else:
+        # Linux環境: システムのtessdataを使用（Aptfileでインストール済み）
+        linux_tessdata = "/usr/share/tesseract-ocr/4.00/tessdata"
         local_tessdata = os.path.join(base_dir, 'tessdata')
-        os.environ['TESSDATA_PREFIX'] = local_tessdata
+        if os.path.exists(linux_tessdata):
+            os.environ['TESSDATA_PREFIX'] = linux_tessdata
+            local_tessdata = linux_tessdata
+        elif os.path.exists(local_tessdata):
+            os.environ['TESSDATA_PREFIX'] = local_tessdata
+        # どちらも存在しない場合はTESSDATA_PREFIXを設定しない（pytesseractのデフォルトを使用）
     print(f"  [DEBUG] Extracting text with OCR (word level)...")
     
     global OCR_SEGMENTS  # v35: グローバル変数を関数先頭で宣言
