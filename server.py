@@ -428,8 +428,11 @@ async def generate_pptx_only(job_id: str):
         
         log_path = job_dir / "conversion_log.txt"
         
-        # Run converter as subprocess
+        # Run converter as subprocess with unbuffered output
         import subprocess
+        env = os.environ.copy()
+        env["PYTHONUNBUFFERED"] = "1"
+        
         cmd = [
             sys.executable,
             str(converter_script),
@@ -447,7 +450,8 @@ async def generate_pptx_only(job_id: str):
             stderr=subprocess.STDOUT,  # Merge stderr into stdout
             cwd=str(BASE_DIR),
             text=True,
-            bufsize=1  # Line buffered
+            bufsize=1,  # Line buffered
+            env=env
         )
         
         # Stream output to console in real-time
