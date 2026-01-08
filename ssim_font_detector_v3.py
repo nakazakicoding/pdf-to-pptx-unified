@@ -57,19 +57,26 @@ def get_font_path(font_family):
     for font_dir in [WINDOWS_FONTS_DIR, USER_FONTS_DIR]:
         path = os.path.join(font_dir, filename)
         if os.path.exists(path):
+            print(f"  [FONT] Found: {path}")
             return path, is_variable
     
     # Linux フォントディレクトリを検索（再帰的に探索）
+    print(f"  [FONT] Searching Linux dirs for: {filename}")
     for base_dir in LINUX_FONTS_DIRS:
         if os.path.exists(base_dir):
             for root, dirs, files in os.walk(base_dir):
                 if filename in files:
-                    return os.path.join(root, filename), is_variable
+                    found_path = os.path.join(root, filename)
+                    print(f"  [FONT] Found exact: {found_path}")
+                    return found_path, is_variable
                 # NotoSansCJK系のフォントも検索（Aptfileでインストールされる形式）
                 for f in files:
                     if "NotoSansCJK" in f and f.endswith(".ttc"):
-                        return os.path.join(root, f), False  # ttcは非可変フォント扱い
+                        found_path = os.path.join(root, f)
+                        print(f"  [FONT] Found CJK: {found_path}")
+                        return found_path, False  # ttcは非可変フォント扱い
     
+    print(f"  [FONT] NOT FOUND: {font_family} ({filename})")
     return None, False
 
 
