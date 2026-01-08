@@ -323,7 +323,7 @@ async def process_pdf_with_gemini_stop_at_json(job_id: str):
             gc.collect()
             
             job["current_page"] = page_num + 1
-            job["progress"] = int((page_num + 1) / total_pages * 20)
+            job["progress"] = 5 + int((page_num + 1) / total_pages * 15)
         
         doc.close()
         del doc

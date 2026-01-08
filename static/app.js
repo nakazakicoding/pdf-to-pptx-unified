@@ -180,7 +180,7 @@ async function startConversion() {
         const uploadData = await uploadResponse.json();
         currentJobId = uploadData.job_id;
 
-        updateProgress(10, 'Upload complete. Starting processing...');
+        updateProgress(5, 'Upload complete. Starting processing...');
         updateStep('upload', 'completed');
         updateStep('analyze', 'active');
 
