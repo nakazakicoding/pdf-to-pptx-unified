@@ -401,6 +401,7 @@ async def continue_to_pptx(job_id: str, background_tasks: BackgroundTasks):
     background_tasks.add_task(generate_pptx_only, job_id)
     jobs[job_id]["status"] = JobStatus.GENERATING
     jobs[job_id]["message"] = "Generating PowerPoint..."
+    jobs[job_id]["progress"] = 60  # Explicitly set to 60% when continuing
     
     return {"status": "generating", "message": "PPTX generation started"}
 
@@ -415,7 +416,7 @@ async def generate_pptx_only(job_id: str):
         
         job["status"] = JobStatus.GENERATING
         job["message"] = "Generating PowerPoint..."
-        # Continue from 60%, don't reset progress
+        job["progress"] = 60  # Ensure we start at 60%
         
         output_filename = Path(job["original_filename"]).stem + ".pptx"
         output_path = OUTPUT_DIR / f"{job_id}_{output_filename}"
