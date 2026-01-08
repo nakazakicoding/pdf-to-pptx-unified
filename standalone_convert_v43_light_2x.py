@@ -1092,9 +1092,9 @@ def detect_graphic_elements(page_image_path, output_dir, text_bboxes_pixel, text
                     for cluster in clusters:
                         # クラスタの代表色（最初の色）との距離を計算
                         representative = cluster[0]
-                        dist = ((color[0] - representative[0])**2 + 
-                                (color[1] - representative[1])**2 + 
-                                (color[2] - representative[2])**2) ** 0.5
+                        dist = ((int(color[0]) - int(representative[0]))**2 + 
+                                (int(color[1]) - int(representative[1]))**2 + 
+                                (int(color[2]) - int(representative[2]))**2) ** 0.5
                         if dist < threshold:
                             cluster.append(color)
                             found_cluster = True
