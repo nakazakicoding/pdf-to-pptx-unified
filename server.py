@@ -283,7 +283,6 @@ async def start_processing(job_id: str, background_tasks: BackgroundTasks):
     
     jobs[job_id]["status"] = JobStatus.PROCESSING
     jobs[job_id]["message"] = "Processing started"
-    jobs[job_id]["progress"] = 5  # Start at 5%
     
     return {"status": "processing", "message": "Processing started"}
 
@@ -324,8 +323,7 @@ async def process_pdf_with_gemini_stop_at_json(job_id: str):
             gc.collect()
             
             job["current_page"] = page_num + 1
-            # Progress: 5% (start) to 20% (end of image conversion)
-            job["progress"] = 5 + int((page_num + 1) / total_pages * 15)
+            job["progress"] = int((page_num + 1) / total_pages * 20)
         
         doc.close()
         del doc
