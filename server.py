@@ -194,8 +194,8 @@ async def analyze_image_with_gemini(image_path: Path, page_num: int) -> dict:
 
 @app.get("/")
 async def root():
-    api_status = "configured" if GEMINI_API_KEY else "not configured"
-    return {"message": "PDF to PowerPoint Converter API (Unified)", "status": "running", "gemini_api": api_status}
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/static/index.html")
 
 
 @app.post("/api/upload")
