@@ -283,6 +283,7 @@ async def start_processing(job_id: str, background_tasks: BackgroundTasks):
     
     jobs[job_id]["status"] = JobStatus.PROCESSING
     jobs[job_id]["message"] = "Processing started"
+    jobs[job_id]["progress"] = 5  # Start at 5%
     
     return {"status": "processing", "message": "Processing started"}
 
@@ -323,7 +324,8 @@ async def process_pdf_with_gemini_stop_at_json(job_id: str):
             gc.collect()
             
             job["current_page"] = page_num + 1
-            job["progress"] = int((page_num + 1) / total_pages * 20)
+            # Progress: 5% (start) to 20% (end of image conversion)
+            job["progress"] = 5 + int((page_num + 1) / total_pages * 15)
         
         doc.close()
         del doc
@@ -337,6 +339,7 @@ async def process_pdf_with_gemini_stop_at_json(job_id: str):
         
         for page_num in range(1, total_pages + 1):
             job["message"] = f"Analyzing page {page_num}/{total_pages}..."
+            # Progress: 20% (start) to 60% (end of analysis)
             job["progress"] = 20 + int(page_num / total_pages * 40)
             
             img_path = pages_dir / f"page_{page_num}.png"
@@ -370,7 +373,7 @@ async def process_pdf_with_gemini_stop_at_json(job_id: str):
             json.dump(analysis_results, f, ensure_ascii=False, indent=2)
         
         job["json_path"] = str(json_path)
-        job["progress"] = 65
+        job["progress"] = 60  # JSON ready at 60%
         
         # STOP HERE - Wait for user to download JSON before continuing
         job["status"] = JobStatus.JSON_READY
@@ -412,7 +415,7 @@ async def generate_pptx_only(job_id: str):
         
         job["status"] = JobStatus.GENERATING
         job["message"] = "Generating PowerPoint..."
-        job["progress"] = 65
+        # Continue from 60%, don't reset progress
         
         output_filename = Path(job["original_filename"]).stem + ".pptx"
         output_path = OUTPUT_DIR / f"{job_id}_{output_filename}"

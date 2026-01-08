@@ -1914,10 +1914,10 @@ def add_slide_from_page(prs, page, page_image_path, page_width, page_height):
             print(f"    [v28 DEBUG] multi_colors = {colors_array}")
             print(f"    [v28 DEBUG] block keys = {list(block.keys())}")
             
-            # v31: SSIMの太字判定結果を取得（cv_imgがある場合）
+            # v31: 太字判定 - JSON優先（JSONがTrueなら太字、Falseなら通常）
             ssim_is_bold = font_props.get("is_bold", json_is_bold) if cv_img is not None else json_is_bold
-            final_is_bold = ssim_is_bold  # SSIMの結果を優先
-            print(f"    [v31] Bold: JSON={json_is_bold}, SSIM={ssim_is_bold} -> Final={final_is_bold}")
+            final_is_bold = json_is_bold  # JSONの結果を優先
+            print(f"    [v31] Bold: JSON={json_is_bold}, SSIM={ssim_is_bold} -> Final={final_is_bold} (JSON priority)")
             
             if colors_array and len(colors_array) > 0:
                 # colors配列がある場合：rangeに従ってrunを分割
