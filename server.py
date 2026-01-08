@@ -148,7 +148,7 @@ async def analyze_image_with_gemini(image_path: Path, page_num: int) -> dict:
         image_data = f.read()
     
     # Create Gemini model
-    model = genai.GenerativeModel("gemini-2.0-flash")
+    model = genai.GenerativeModel("gemini-3-flash-preview")
     
     # Create image part
     image_part = {
