@@ -180,6 +180,7 @@ async function startConversion() {
         const uploadData = await uploadResponse.json();
         currentJobId = uploadData.job_id;
 
+        updateProgress(10, 'Upload complete. Starting processing...');
         updateStep('upload', 'completed');
         updateStep('analyze', 'active');
 
@@ -248,7 +249,7 @@ function startStatusPolling() {
             stopStatusPolling();
             showError(error.message);
         }
-    }, 2000);
+    }, 1000);
 }
 
 function stopStatusPolling() {
@@ -291,7 +292,7 @@ document.getElementById('continue-btn').addEventListener('click', async () => {
 
     showSection('processing');
     updateStep('generate', 'active');
-    updateProgress(85, 'Generating PowerPoint...');
+    updateProgress(60, 'Generating PowerPoint...');
 
     try {
         const response = await fetch(`${API_BASE}/api/continue/${currentJobId}`, {
