@@ -22,6 +22,14 @@ import unicodedata
 # フォントディレクトリ
 WINDOWS_FONTS_DIR = r"C:\Windows\Fonts"
 USER_FONTS_DIR = os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\Windows\Fonts")
+# Linux (Render/Ubuntu) フォントディレクトリ
+LINUX_FONTS_DIRS = [
+    "/usr/share/fonts/opentype/noto",
+    "/usr/share/fonts/truetype/noto",
+    "/usr/share/fonts/opentype",
+    "/usr/share/fonts/truetype",
+    "/usr/share/fonts"
+]
 
 # フォントファミリー名とファイルのマッピング
 FONT_FAMILY_MAP = {
@@ -45,10 +53,22 @@ def get_font_path(font_family):
     
     filename, is_variable = FONT_FAMILY_MAP[font_family]
     
+    # Windows フォントディレクトリを検索
     for font_dir in [WINDOWS_FONTS_DIR, USER_FONTS_DIR]:
         path = os.path.join(font_dir, filename)
         if os.path.exists(path):
             return path, is_variable
+    
+    # Linux フォントディレクトリを検索（再帰的に探索）
+    for base_dir in LINUX_FONTS_DIRS:
+        if os.path.exists(base_dir):
+            for root, dirs, files in os.walk(base_dir):
+                if filename in files:
+                    return os.path.join(root, filename), is_variable
+                # NotoSansCJK系のフォントも検索（Aptfileでインストールされる形式）
+                for f in files:
+                    if "NotoSansCJK" in f and f.endswith(".ttc"):
+                        return os.path.join(root, f), False  # ttcは非可変フォント扱い
     
     return None, False
 
